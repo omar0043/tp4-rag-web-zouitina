@@ -9,7 +9,7 @@
 
 ## Compilation et tests Java
 
-Commande Maven exécutée : `clean verify`. Résultat : **BUILD SUCCESS**, **7 tests, 0 échec, 0 erreur**.
+Commande Maven exécutée : `clean verify`. Résultat : **BUILD SUCCESS**, **8 tests, 0 échec, 0 erreur**.
 
 | Vérification | Résultat | Modèle |
 | --- | --- | --- |
@@ -35,3 +35,7 @@ Vérifications réussies : page et état JSF chargés, question vide refusée, m
 ## À vérifier sur le poste de l’étudiant
 
 Configurer GEMINI_KEY pour le processus Payara, choisir un modèle disponible dans le compte, déployer le WAR normal et exécuter les scénarios du README. Vérifier les réponses réelles et les choix du modèle dans les logs. Aucun résultat de conversation simulée ne doit être présenté comme un échange réel avec Gemini dans le rendu.
+
+## Correction du menu des rôles
+
+Les valeurs du menu sont désormais des identifiants simples (`documentaire`, `traducteur`, `guide`) ; les prompts restent sur le serveur. Cela évite les différences de fins de ligne entre une valeur HTML multiligne et la valeur attendue par JSF. Le test du formulaire normalise désormais les champs en CRLF comme un navigateur. Un test Java supplémentaire vérifie les identifiants et leur association aux prompts.

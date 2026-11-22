@@ -9,7 +9,6 @@ import jakarta.inject.Named;
 import ma.emsi.zouitina.tp4ragwebzouitina.llm.LlmClient;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,10 +22,9 @@ import java.util.List;
 public class Bb implements Serializable {
 
     /**
-     * Rôle "système" attribué au LLM.
-     * Possible d'écrire un nouveau rôle dans la liste déroulante.
+     * Identifiant stable du rôle choisi ; le texte du prompt reste côté serveur.
      */
-    private String roleSysteme;
+    private String roleSysteme = "documentaire";
 
     /**
      * Après le premier échange, le rôle ne peut plus être modifié
@@ -136,7 +134,7 @@ public class Bb implements Serializable {
         try {
             // Définit le rôle système avant le premier échange.
             if (this.roleSystemeChangeable) {
-                this.llmClient.setSystemRole(this.roleSysteme);
+                this.llmClient.setSystemRole(texteRole(this.roleSysteme));
             }
 
             this.reponse = this.llmClient.chat(this.question);
@@ -180,33 +178,33 @@ public class Bb implements Serializable {
 
     public List<SelectItem> getRolesSysteme() {
         if (this.listeRolesSysteme == null) {
-            // Génère les rôles de l'API prédéfinis.
-            this.listeRolesSysteme = new ArrayList<>();
-            // Vous pouvez évidemment écrire ces rôles dans la langue que vous voulez.
-            String role = """
+            this.listeRolesSysteme = List.of(
+                    new SelectItem("documentaire", "Assistant documentaire"),
+                    new SelectItem("traducteur", "Traducteur Anglais-Français"),
+                    new SelectItem("guide", "Guide touristique")
+            );
+        }
+        return this.listeRolesSysteme;
+    }
+
+    static String texteRole(String identifiant) {
+        return switch (identifiant) {
+            case "documentaire" -> """
                     Tu es un assistant documentaire. Réponds en français à partir des extraits fournis.
                     Indique le nom du fichier source lorsqu'il est présent dans les extraits.
                     Si les extraits ne suffisent pas, explique cette limite sans inventer de contenu.
                     """;
-            // 1er argument : la valeur du rôle, 2ème argument : le libellé du rôle.
-            this.listeRolesSysteme.add(new SelectItem(role, "Assistant documentaire"));
-
-            role = """
+            case "traducteur" -> """
                     You are an interpreter. You translate from English to French and from French to English.
-                    If the user type a French text, you translate it into English.
-                    If the user type an English text, you translate it into French.
-                    If the text contains only one to three words, give some examples of usage of these words in English.
+                    If the user types a French text, translate it into English.
+                    If the user types an English text, translate it into French.
+                    For one to three words, give examples of usage in English.
                     """;
-            this.listeRolesSysteme.add(new SelectItem(role, "Traducteur Anglais-Français"));
-
-            role = """
-                    Your are a travel guide. If the user type the name of a country or of a town,
-                    you tell them what are the main places to visit in the country or the town
-                    are you tell them the average price of a meal.
+            case "guide" -> """
+                    You are a travel guide. Use the supplied documents to describe places to visit.
+                    Do not invent prices or information missing from the documents.
                     """;
-            this.listeRolesSysteme.add(new SelectItem(role, "Guide touristique"));
-        }
-
-        return this.listeRolesSysteme;
+            default -> throw new IllegalArgumentException("Rôle inconnu");
+        };
     }
 }

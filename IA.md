@@ -31,3 +31,7 @@ J’ai demandé un commit par étape avec au moins cinq minutes réelles entre l
 ## Limites
 
 Ce document est une synthèse, pas une transcription intégrale de la conversation. Aucun pourcentage d’assistance n’a été mesuré. Les secrets doivent être fournis au serveur par des variables d’environnement ; ils ne sont pas inclus dans le dépôt.
+
+## Correction après essai sur le poste de travail
+
+Après une capture montrant « la valeur est incorrecte » sur le rôle, ChatGPT a remplacé les valeurs multilignes du menu par des identifiants stables. Les prompts restent côté serveur. Il a ajouté un test de non-régression et adapté le script Payara à la normalisation CRLF des formulaires par les navigateurs.

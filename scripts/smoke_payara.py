@@ -75,6 +75,10 @@ with log.open("w") as sortie:
         def envoyer(page, question):
             f = Formulaire(page)
             f.champs.update({"form:question": question, "form:envoyer": "Envoyer la question"})
+            # Les navigateurs normalisent les retours à la ligne des valeurs de formulaire en CRLF.
+            # Le rôle doit être un identifiant simple pour rester valide après cette normalisation.
+            f.champs = {nom: valeur.replace("\r\n", "\n").replace("\n", "\r\n")
+                        for nom, valeur in f.champs.items()}
             data = urllib.parse.urlencode(f.champs).encode()
             return opener.open(urllib.parse.urljoin(url, f.action), data=data, timeout=20).read().decode()
 
