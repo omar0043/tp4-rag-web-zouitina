@@ -1,0 +1,75 @@
+"""Vérifie le vrai formulaire JSF sans appel externe ni clé API.
+Usage : python scripts/smoke_payara.py /chemin/payara-micro-7.2026.10.jar
+Prérequis : java sur PATH et .\u002fmvnw clean package exécuté.
+"""
+from html.parser import HTMLParser
+from http.cookiejar import CookieJar
+from pathlib import Path
+import os
+import subprocess
+import sys
+import time
+import urllib.parse
+import urllib.request
+
+class Formulaire(HTMLParser):
+    def __init__(self, texte):
+        super().__init__()
+        self.champs = {}
+        self.action = ""
+        self.feed(texte)
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if tag == "form":
+            self.action = a["action"]
+        if tag == "input" and a.get("type") == "hidden":
+            self.champs[a["name"]] = a.get("value", "")
+        if tag == "option" and "form:rolesysteme" not in self.champs:
+            self.champs["form:rolesysteme"] = a["value"]
+
+root = Path(__file__).resolve().parents[1]
+war = root / "target/tp4-rag-web-zouitina.war"
+if not war.is_file():
+    raise SystemExit("Compiler le WAR avant ce test.")
+url = "http://127.0.0.1:8180/tp4-rag-web-zouitina/"
+opener = urllib.request.build_opener(
+    urllib.request.ProxyHandler({}), urllib.request.HTTPCookieProcessor(CookieJar()))
+env = os.environ.copy()
+env.pop("GEMINI_KEY", None)
+log = root / "target/payara-smoke.log"
+with log.open("w") as sortie:
+    serveur = subprocess.Popen(["java", "-jar", sys.argv[1], "--port", "8180", "--nocluster",
+                                "--deploy", str(war)], env=env, stdout=sortie, stderr=subprocess.STDOUT)
+    try:
+        limite = time.monotonic() + 55
+        while True:
+            try:
+                page = opener.open(url, timeout=2).read().decode()
+                break
+            except OSError:
+                if time.monotonic() > limite or serveur.poll() is not None:
+                    raise RuntimeError("Payara n'a pas démarré ; consulter " + str(log))
+                time.sleep(1)
+        assert "TP4 RAG" in page and "jakarta.faces.ViewState" in page
+        print("OK : page JSF et formulaire chargés")
+
+        def envoyer(page, question):
+            f = Formulaire(page)
+            f.champs.update({"form:question": question, "form:envoyer": "Envoyer la question"})
+            data = urllib.parse.urlencode(f.champs).encode()
+            return opener.open(urllib.parse.urljoin(url, f.action), data=data, timeout=20).read().decode()
+
+        page = envoyer(page, "   ")
+        assert "Il manque le texte de la question" in page
+        print("OK : question vide refusée")
+        page = envoyer(page, "Bonjour")
+        assert "Impossible d’obtenir une réponse de Gemini." in page
+        assert "Bonjour" in page
+        print("OK : erreur contrôlée sans GEMINI_KEY, question conservée")
+    finally:
+        serveur.terminate()
+        try:
+            serveur.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            serveur.kill()
