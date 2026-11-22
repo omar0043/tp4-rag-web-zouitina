@@ -54,6 +54,10 @@
                             <h:outputText value="Réponse :"/>
                             <button type="button" onclick="copyToClipboard('reponse')">Copier réponse</button>
                         </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="sources">
+                            <h:outputText value="Documents fournis à la dernière réponse : "/>
+                            <h:outputText value="#{bb.sourcesUtilisees}"/>
+                        </h:panelGroup>
                         <h:inputTextarea id="reponse" value="#{bb.reponse}" title="Réponse"
                                          cols="50" rows="15" readonly="true"/>
                     </h:panelGrid>

@@ -24,8 +24,8 @@ class ConversationRagTest {
             @Override public ChatResponse doChat(ChatRequest request) {
                 String prompt = ((UserMessage) request.messages().getLast()).singleText();
                 prompts.add(prompt);
-                String texte = prompt.contains("Reformulate this query")
-                        ? autonome : "Réponse de test sur le fine-tuning";
+                String texte = prompt.contains("Based on the user query") ? "1"
+                        : prompt.contains("Reformulate this query") ? autonome : "Réponse de test sur le fine-tuning";
                 return ChatResponse.builder().aiMessage(AiMessage.from(texte)).build();
             }
         };

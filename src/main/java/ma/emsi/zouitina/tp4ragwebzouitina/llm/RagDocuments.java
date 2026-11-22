@@ -7,6 +7,7 @@ import dev.langchain4j.data.document.splitter.DocumentSplitters;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.rag.content.Content;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -49,6 +50,11 @@ public class RagDocuments {
                 .minScore(0.5)
                 .build();
         LOG.info(() -> "Indexation de " + fichier + " : " + segments.size() + " segments");
-        return new Source(fichier, description, retriever);
+        ContentRetriever avecOrigine = query -> retriever.retrieve(query).stream()
+                .map(c -> Content.from(TextSegment.from(
+                        "Source : " + fichier + "\n" + c.textSegment().text(),
+                        c.textSegment().metadata())))
+                .toList();
+        return new Source(fichier, description, avecOrigine);
     }
 }

@@ -13,3 +13,5 @@ input[type=submit]:hover, button:hover { background: #dcebf2; }
 input[type=submit]:disabled { opacity: .6; cursor: wait; }
 :focus-visible { outline: 3px solid #287fa9; outline-offset: 2px; }
 @media (max-width: 760px) { body { margin: 1rem auto; } table, tbody, tr, td { display: block; width: auto !important; } form { padding: .8rem; } }
+
+.sources { font-size: .9rem; padding: .6rem; background: #eef6f4; border-radius: 6px; color: #245348; }

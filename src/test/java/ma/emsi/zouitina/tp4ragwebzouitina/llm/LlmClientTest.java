@@ -26,8 +26,8 @@ class LlmClientTest {
                 throw new IllegalStateException("quota simulé");
             }
             String texte = ((UserMessage) request.messages().getLast()).singleText();
-            String reponse = texte.contains("Reformulate this query")
-                    ? "Question autonome simulée" : "Réponse simulée";
+            String reponse = texte.contains("Based on the user query") ? "1"
+                    : texte.contains("Reformulate this query") ? "Question autonome simulée" : "Réponse simulée";
             return ChatResponse.builder().aiMessage(AiMessage.from(reponse)).build();
         }
     }

@@ -1,5 +1,7 @@
 package ma.emsi.zouitina.tp4ragwebzouitina.llm;
 
+import dev.langchain4j.service.Result;
+
 public interface Assistant {
-    String chat(String prompt);
+    Result<String> chat(String prompt);
 }

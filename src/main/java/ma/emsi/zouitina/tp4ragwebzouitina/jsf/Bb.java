@@ -92,6 +92,10 @@ public class Bb implements Serializable {
         this.question = question;
     }
 
+    public String getSourcesUtilisees() {
+        return llmClient.getSourcesUtilisees();
+    }
+
     public String getReponse() {
         return this.reponse;
     }
@@ -180,8 +184,9 @@ public class Bb implements Serializable {
             this.listeRolesSysteme = new ArrayList<>();
             // Vous pouvez évidemment écrire ces rôles dans la langue que vous voulez.
             String role = """
-                    You are a helpful assistant. You help the user to find the information they need.
-                    If the user type a question, you answer it.
+                    Tu es un assistant documentaire. Réponds en français à partir des extraits fournis.
+                    Indique le nom du fichier source lorsqu'il est présent dans les extraits.
+                    Si les extraits ne suffisent pas, explique cette limite sans inventer de contenu.
                     """;
             // 1er argument : la valeur du rôle, 2ème argument : le libellé du rôle.
             this.listeRolesSysteme.add(new SelectItem(role, "Assistant documentaire"));

@@ -12,6 +12,12 @@ Les documents `rag.pdf` et `autre.pdf` sont repris du dépôt des tests du TP4. 
 
 ChatGPT a ajouté CompressingQueryTransformer au pipeline RAG, en utilisant l’historique propre à la vue. Il a rédigé un test du client qui vérifie que la question de suivi reformulée est transmise au récupérateur. Le modèle de ce test est simulé ; le test valide le branchement des composants, pas la qualité linguistique de Gemini.
 
+## Routage et indication des sources
+
+ChatGPT a ajouté LanguageModelQueryRouter avec une description du cours et une description du guide touristique. Il a adapté l’interface Assistant pour retourner Result<String> et afficher les fichiers associés aux passages réellement fournis. Les passages injectés sont préfixés par leur fichier source pour rendre leur origine lisible par le modèle.
+
+Le test automatisé du routage simule une sélection du guide de Nice et vérifie que le récupérateur du cours n’est pas consulté et que son contenu n’apparaît pas dans le nouveau prompt. Cette simulation vérifie le câblage du routeur ; elle ne prouve pas que Gemini fera toujours le bon choix.
+
 ## Vérifications
 
 L’assistant a compilé le projet et exécuté des tests sur les deux vrais PDF. Des tests avec un modèle simulé vérifient le maintien d’une conversation, l’absence de partage de l’historique entre deux clients et le rétablissement de l’historique après un appel refusé. Ces réponses simulées ne sont pas des réponses de Gemini.
