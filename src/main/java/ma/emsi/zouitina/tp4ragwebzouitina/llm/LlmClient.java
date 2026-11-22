@@ -5,8 +5,6 @@ import dev.langchain4j.data.message.ChatMessageSerializer;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
-import dev.langchain4j.rag.DefaultRetrievalAugmentor;
-import dev.langchain4j.rag.query.router.DefaultQueryRouter;
 import jakarta.inject.Inject;
 import dev.langchain4j.service.AiServices;
 import jakarta.enterprise.context.Dependent;
@@ -64,10 +62,7 @@ public class LlmClient implements Serializable {
         }
 
         var modele = modelProvider.model();
-        var retrievers = documents.sources().stream().map(RagDocuments.Source::retriever).toList();
-        var augmentor = DefaultRetrievalAugmentor.builder()
-                .queryRouter(new DefaultQueryRouter(retrievers))
-                .build();
+        var augmentor = RagPipeline.creer(modele, documents.sources());
 
         memoire = MessageWindowChatMemory.withMaxMessages(20);
         ChatMessageDeserializer.messagesFromJson(historique).forEach(memoire::add);

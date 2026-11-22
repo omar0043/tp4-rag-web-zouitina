@@ -25,7 +25,10 @@ class LlmClientTest {
             if (echouer.getAndSet(false)) {
                 throw new IllegalStateException("quota simulé");
             }
-            return ChatResponse.builder().aiMessage(AiMessage.from("Réponse simulée")).build();
+            String texte = ((UserMessage) request.messages().getLast()).singleText();
+            String reponse = texte.contains("Reformulate this query")
+                    ? "Question autonome simulée" : "Réponse simulée";
+            return ChatResponse.builder().aiMessage(AiMessage.from(reponse)).build();
         }
     }
 

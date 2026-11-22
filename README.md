@@ -6,11 +6,11 @@ Java 21 minimum. Le projet fonctionne aussi avec un JDK 25.
 ## Configuration
 
 Définir GEMINI_KEY dans l’environnement du processus Payara.
-Le modèle par défaut est gemini-3.5-flash-lite.
+Le modèle par défaut est gemini-3.5-flash-lite. Sa disponibilité et ses quotas dépendent du compte Google : utiliser GEMINI_MODEL pour choisir un autre modèle disponible. Aucune clé Tavily n’est nécessaire pour ces deux fonctionnalités.
 
-## État de cette étape
+## Fonctionnement
 
-Conversation du TP2 enrichie par les deux PDF. Les deux récupérateurs sont encore interrogés à chaque question.
+Conversation du TP2 enrichie par les deux PDF. Les questions de suivi sont reformulées avec `CompressingQueryTransformer` avant la recherche. Les deux récupérateurs sont encore interrogés à chaque question.
 
 ## Documents
 
@@ -42,3 +42,25 @@ Les logs contiennent les questions et les extraits documentaires : les garder lo
 
 Les fonctions existantes du TP2 (rôles, historique, nouveau chat, copie) sont conservées.
 La liste des rôles utilise les composants Jakarta Faces standards.
+
+## Première fonctionnalité : transformation des questions
+
+Dans une même conversation, poser :
+
+1. « Qu’est-ce que le fine-tuning ? »
+2. « Dans le support fourni, à quoi c’est comparé ? »
+
+Avec RAG_LOG_REQUESTS=true, vérifier le prompt du transformateur contenant l’historique, sa question autonome puis le prompt augmenté envoyé pour générer la réponse. Ce scénario est à exécuter avec Gemini ; une reformulation correcte ne garantit pas que les passages du PDF contiennent la comparaison attendue.
+
+## Tests sans clé API
+
+`./mvnw clean verify` exécute les tests JUnit avec les vrais PDF et des modèles simulés.
+
+Pour vérifier le formulaire sur Payara Micro 7 (JAR à télécharger séparément) :
+
+```text
+python scripts/smoke_payara.py /chemin/payara-micro-7.2026.10.jar
+python scripts/smoke_payara.py /chemin/payara-micro-7.2026.10.jar --mock
+```
+
+Le second test construit un WAR distinct dans `target/smoke/` avec un modèle simulé. Ne pas déployer ce WAR comme application finale. Le WAR normal ne contient pas ce modèle de test.
