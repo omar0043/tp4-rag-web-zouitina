@@ -1,37 +1,20 @@
 # Utilisation de l’IA — TP4 RAG Web
 
-Étudiant : Omar Zouitina. Outil : ChatGPT (OpenAI).
+**Étudiant :** Omar Zouitina  
+**Outil utilisé :** ChatGPT (OpenAI)
 
-## Base et aide apportée
+## Assistance utilisée
 
-Le projet reprend l’application du TP2 du dépôt `tp2-web-zouitina` (base `f7f9c68`). À ma demande, ChatGPT a préparé le nouveau projet Jakarta EE 11 pour Payara 7, adapté les packages et les dépendances, et rédigé les ajouts du TP4. L’aide comprend la génération de classes complètes, des tests automatisés et de la documentation, puis leur ajout sur GitHub.
+J’ai utilisé ChatGPT pour adapter l’application du TP2 au TP4 : configuration Maven, génération de code Java pour le RAG avec deux PDF, reformulation des questions et routage entre les documents. L’assistance a aussi porté sur la correction d’erreurs, la rédaction de tests automatisés, la documentation et les commits sur GitHub.
 
-Les documents `rag.pdf` et `autre.pdf` sont repris du dépôt des tests du TP4. `rag.pdf` est le support de Richard Grin. `autre.pdf` est un document touristique sur Nice produit avec ChatGPT lors des tests précédents.
+Le fichier `rag.pdf` est le support de cours de Richard Grin. Le document touristique `autre.pdf` a été produit avec ChatGPT pendant les tests précédents.
 
-## Transformation des questions
+## Travail et vérifications personnels
 
-ChatGPT a ajouté CompressingQueryTransformer au pipeline RAG, en utilisant l’historique propre à la vue. Il a rédigé un test du client qui vérifie que la question de suivi reformulée est transmise au récupérateur. Le modèle de ce test est simulé ; le test valide le branchement des composants, pas la qualité linguistique de Gemini.
+J’ai récupéré le projet sur mon poste, exécuté la compilation Maven, démarré Payara et déployé l’application. J’ai testé les échanges réels avec Gemini et transmis les résultats et les captures pour analyser les problèmes rencontrés, notamment la validation du rôle dans le formulaire.
 
-## Routage et indication des sources
-
-ChatGPT a ajouté LanguageModelQueryRouter avec une description du cours et une description du guide touristique. Il a adapté l’interface Assistant pour retourner Result<String> et afficher les fichiers associés aux passages réellement fournis. Les passages injectés sont préfixés par leur fichier source pour rendre leur origine lisible par le modèle.
-
-Le test automatisé du routage simule une sélection du guide de Nice et vérifie que le récupérateur du cours n’est pas consulté et que son contenu n’apparaît pas dans le nouveau prompt. Cette simulation vérifie le câblage du routeur ; elle ne prouve pas que Gemini fera toujours le bon choix.
-
-## Vérifications
-
-L’assistant a compilé le projet et exécuté des tests sur les deux vrais PDF. Des tests avec un modèle simulé vérifient le maintien d’une conversation, l’absence de partage de l’historique entre deux clients et le rétablissement de l’historique après un appel refusé. Ces réponses simulées ne sont pas des réponses de Gemini.
-
-La page JSF a été chargée sur Payara Micro 7.2026.10 pour vérifier le déploiement. Le script de vérification du formulaire teste aussi les questions vides, l’absence de clé et deux tours de conversation avec les vrais PDF et un modèle simulé. Aucun appel à Gemini avec ma clé personnelle n’a été effectué par l’assistant. La validation de la qualité des réponses réelles reste à effectuer dans mon environnement Payara.
-
-## Commits
-
-J’ai demandé un commit par étape avec au moins cinq minutes réelles entre les commits. Les dates des commits ne sont pas antidatées.
+J’ai posé des questions sur le fine-tuning puis sur la Colline du Château à Nice, ainsi qu’une question de suivi sur la vue du port. Les réponses obtenues citent respectivement `rag.pdf` et `autre.pdf`.
 
 ## Limites
 
-Ce document est une synthèse, pas une transcription intégrale de la conversation. Aucun pourcentage d’assistance n’a été mesuré. Les secrets doivent être fournis au serveur par des variables d’environnement ; ils ne sont pas inclus dans le dépôt.
-
-## Correction après essai sur le poste de travail
-
-Après une capture montrant « la valeur est incorrecte » sur le rôle, ChatGPT a remplacé les valeurs multilignes du menu par des identifiants stables. Les prompts restent côté serveur. Il a ajouté un test de non-régression et adapté le script Payara à la normalisation CRLF des formulaires par les navigateurs.
+Les tests automatisés utilisant un modèle simulé ont été exécutés par l’assistant ; les conversations réelles avec Gemini ont été testées sur mon poste. Une réponse qui tient compte du contexte ne suffit pas, à elle seule, à démontrer l’effet de la reformulation. La pertinence des réponses dépend aussi des passages récupérés.
